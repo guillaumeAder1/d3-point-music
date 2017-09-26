@@ -16,27 +16,31 @@ var anim = {
             .attr('cx', function(d){return d.cx})
             .attr('cy', function(d){return d.cy});
         
-        this.container.on('click', this.refreshdata.bind(this) );
+        this.container.on('click', this.refreshData.bind(this) );
     },
-    refreshdata: function(){
+    refreshData: function(){
         this.in += 1;      
         this.container.transition().duration(250).style("background-color", (this.in % 2 === 0) ? 'black' : 'white' )
-        this.container.selectAll('circle')
-        //.data(this.getData(36))
-        .transition()
+        this.container.selectAll('circle').transition()
             .duration(250)
             .attr('r', function(d){return d.r})                
                 .style('fill', (this.in % 2 === 0 ) ? 'white' : 'black')
-                .attr('cx', function(d){return d.cx + getRandomArbitrary(10,150)})
-                .attr('cy', function(d){return d.cy + getRandomArbitrary(10,150)});
-        // generate new points
-        // this.container.selectAll('circle').remove();
-        // var newval = this.container.selectAll('circle').data(this.getData(36));
-        // newval.enter().append('circle')
-        //     .attr('r', function(d){return d.r})
-        //     .attr('cx', function(d){return d.cx})
-        //     .attr('cy', function(d){return d.cy});
+                .attr('cx', function(d){return d.cx + getRandomArbitrary(10,150, true)})
+                .attr('cy', function(d){return d.cy + getRandomArbitrary(10,150, true)})
+                // .on('end', )
+                .call(this.circleAnim)
+                
+      
 
+    },
+    circleAnim: function(element,e,i){
+
+        element.on('end', function(d,i){
+            if(randomBool()){    
+                d3.select(this).transition().style('fill', 'green' )                
+            }      
+        });       
+     
     },
     getData : function(val){
         var nbrDots = val || getRandomArbitrary(10,50);
@@ -50,6 +54,14 @@ var anim = {
         },this);       
     }
 }
-function getRandomArbitrary(min, max) {
-    return Math.floor(Math.random() * (max - min) + min);
+function getRandomArbitrary(min, max, bool) {
+    var value = Math.floor(Math.random() * (max - min) + min);
+    if(bool){
+        value = (randomBool()) ? value : -value;
+    }
+    return value
+}
+
+function randomBool(){
+    return Math.random() >= 0.5;
 }
